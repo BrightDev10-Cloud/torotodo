@@ -9,28 +9,60 @@
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script>
     tailwind.config = {
+      darkMode: 'class',
       theme: {
         extend: {
           colors: {
-            'bg': '#0f172a',
-            'card': '#111827',
-            'text': '#f1f5f9',
-            'muted': '#94a3b8',
-            'accent': '#3b82f6',
-            'accent-hover': '#2563eb',
-            'danger': '#ef4444',
-            'danger-hover': '#dc2626',
-            'border': '#1e293b',
-            'border-light': '#334155',
+            'bg': 'var(--bg)',
+            'card': 'var(--card)',
+            'text': 'var(--text)',
+            'muted': 'var(--muted)',
+            'accent': 'var(--accent)',
+            'accent-hover': 'var(--accent-hover)',
+            'danger': 'var(--danger)',
+            'danger-hover': 'var(--danger-hover)',
+            'border': 'var(--border)',
+            'border-light': 'var(--border-light)',
+            'input-bg': 'var(--input-bg)',
           }
         }
       }
     }
   </script>
   <style>
+    :root {
+      --body-bg: #f1f5f9;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
+      --border: #e2e8f0;
+      --border-light: #cbd5e1;
+      --input-bg: rgba(226, 232, 240, 0.8);
+    }
+
+    .dark {
+      --body-bg: linear-gradient(135deg, #0b1223 0%, #0f172a 50%, #0a0f1c 100%);
+      --bg: #0f172a;
+      --card: #111827;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
+      --border: #1e293b;
+      --border-light: #334155;
+      --input-bg: rgba(15, 23, 42, 0.8);
+    }
+
     body {
       font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Ubuntu, Cantarell, sans-serif;
-      background: linear-gradient(135deg, #0b1223 0%, #0f172a 50%, #0a0f1c 100%);
+      background: var(--body-bg);
       min-height: 100vh;
     }
     
@@ -42,22 +74,26 @@
     .animate-fade-in {
       animation: fadeIn 0.6s ease-out;
     }
-
   </style>
 </head>
 
 <body>
   <div class="max-w-2xl mx-auto my-16 px-5 md:my-16 my-5 md:px-5 px-4">
     <div class="bg-card border border-border rounded-2xl p-8 md:p-8 p-6 shadow-2xl backdrop-blur-sm animate-fade-in" role="application" aria-label="Todo app">
-      <header class="mb-8">
-        <h1 class="text-3xl font-bold mb-3 bg-gradient-to-r from-text to-muted bg-clip-text text-transparent">Toro</h1>
-        <div class="text-muted text-base leading-relaxed">Your personal task manager</div>
+      <header class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-3xl font-bold mb-3 bg-gradient-to-r from-text to-muted bg-clip-text text-transparent">Toro</h1>
+            <div class="text-muted text-base leading-relaxed">Your personal task manager</div>
+        </div>
+        <button id="theme-toggle" class="px-4 py-2 rounded-xl bg-transparent text-muted border border-border-light cursor-pointer transition-all duration-200 hover:bg-accent/10 hover:text-accent hover:border-accent" title="Toggle theme">
+            Toggle Theme
+        </button>
       </header>
 
       <section class="mb-6">
         <div class="flex gap-3 items-center md:flex-row flex-col">
           <input id="newTodo" type="text" placeholder="What needs to be done?" aria-label="New todo" 
-                 class="flex-1 px-4 py-3.5 rounded-xl border border-border-light bg-slate-900/80 text-text text-base transition-all duration-200 focus:outline-none focus:border-accent focus:ring-3 focus:ring-accent/10 placeholder:text-muted w-full" />
+                 class="flex-1 px-4 py-3.5 rounded-xl border border-border-light bg-input-bg text-text text-base transition-all duration-200 focus:outline-none focus:border-accent focus:ring-3 focus:ring-accent/10 placeholder:text-muted w-full" />
           <button id="addBtn" aria-label="Add todo" 
                   class="px-5 py-3.5 rounded-xl bg-accent text-white font-semibold text-sm cursor-pointer transition-all duration-200 hover:bg-accent-hover hover:-translate-y-0.5 whitespace-nowrap md:w-auto w-full">Add Task</button>
         </div>
@@ -81,7 +117,7 @@
           <span id="count">0</span> tasks • <span id="storage"></span>
         </div>
         <div class="text-xs opacity-80">
-          <span class="kbd px-2 py-1 border border-border-light rounded text-xs text-muted bg-slate-900/50">Enter</span> to add •
+          <span class="kbd px-2 py-1 border border-border-light rounded text-xs text-muted bg-input-bg">Enter</span> to add •
         </div>
       </footer>
 
@@ -201,7 +237,7 @@
         // Inline editing
         $li.find('span').on('dblclick', function() {
           const $span = $(this);
-          const $input = $(`<input class="flex-1 px-3 py-2 rounded-lg border border-accent bg-slate-900/90 text-text text-base" value="${todo.title}">`);
+          const $input = $(`<input class="flex-1 px-3 py-2 rounded-lg border border-accent bg-input-bg text-text text-base" value="${todo.title}">`);
           
           $span.replaceWith($input);
           $input.focus().select();
@@ -326,6 +362,32 @@
           $(this).val(''); // Reset file input
         }
       });
+
+      // --- Theme switching ----------------------------------------------------
+      const $html = $('html');
+      const $themeToggle = $('#theme-toggle');
+
+      function setTheme(theme) {
+        if (theme === 'dark') {
+          $html.addClass('dark');
+        } else {
+          $html.removeClass('dark');
+        }
+        localStorage.setItem('theme', theme);
+      }
+
+      $themeToggle.on('click', () => {
+        const currentTheme = $html.hasClass('dark') ? 'dark' : 'light';
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        setTheme(newTheme);
+      });
+
+      // Apply saved theme on page load
+      let savedTheme = localStorage.getItem('theme');
+      if (!savedTheme) {
+        savedTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      setTheme(savedTheme);
 
       // --- Bootstrap ------------------------------------------------------------
       // Only seed initial data for first-time users (when localStorage has never been initialized)
